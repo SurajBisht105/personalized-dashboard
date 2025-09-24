@@ -11,17 +11,28 @@ export async function GET(request: NextRequest) {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
 
+  // Helper function to get random array element
+  const getRandomElement = <T>(arr: readonly T[]): T => {
+    return arr[Math.floor(Math.random() * arr.length)]!;
+  };
+
+  // Define sources and types
+  const sources = ['NewsAPI', 'TMDB', 'Twitter'] as const;
+  const types: ContentItem['type'][] = ['news', 'recommendation', 'social'];
+
   // Generate mock content
   const items: ContentItem[] = Array.from({ length: 10 }, (_, i) => ({
     id: `${page}-${i}`,
-    type: ['news', 'recommendation', 'social'][Math.floor(Math.random() * 3)] as any,
+    type: getRandomElement(types),
     title: `Content Item ${page * 10 + i}`,
     description: `This is a description for content item ${page * 10 + i}. It contains interesting information.`,
     imageUrl: `https://picsum.photos/seed/${page * 10 + i}/400/300`,
     url: '#',
-    category: categories[Math.floor(Math.random() * categories.length)] || 'general',
+    category: categories.length > 0 
+      ? getRandomElement(categories) 
+      : 'general',
     timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
-    source: ['NewsAPI', 'TMDB', 'Twitter'][Math.floor(Math.random() * 3)],
+    source: getRandomElement(sources),
   }));
 
   // Filter by query if provided
